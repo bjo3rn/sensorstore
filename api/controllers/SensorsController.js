@@ -50,7 +50,7 @@ module.exports = {
    tail: function (req, res) {
     var sid = req.param("sid");
     var n = parseInt(req.param("n"));
-   	if(!n) {n=10};
+   	if(!n) {n=1};
    	
    	if(sid) {
    		
@@ -71,15 +71,30 @@ module.exports = {
 
   /**
    * Action blueprints:
-   *    `/sensors/tail`
+   *    `/sensors/list`
    */
-   keys: function (req, res) {
+   list: function (req, res) {
     Sensors.find().done(function(err,all){
 		if (err) return next(err);
     	return res.json(_und.uniq(_und.pluck(all,'sid')));
     });
   },
 
+  /** /create is more flexible, but this is to have compatibility with Edward's server 
+  set: function(req,res,next) {
+  	Sensors.create(req.query).done(function(err,entry){
+  		// Error handling
+  		if (err) {
+  			console.log(err);
+    		return next(err);
+		// The User was created successfully!
+  		}else {
+    		return res.json(entry);
+  		}
+
+  	});
+  },
+*/
 
 
   /**

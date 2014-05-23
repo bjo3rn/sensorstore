@@ -1,0 +1,19 @@
+<div>
+<h1>Sensorstore Help</h1>
+<h2>REST API</h2>
+<h3>/help</h3>
+This page
+
+<h3>/set</h3>
+<p>/set?sid=&lt;s&gt;&amp;param1=&lt;value1&gt;&amp;param2=&lt;value2&gt; - save a new sensor entry for sensor id s with param1=value2, param2=value2 etc.</p>
+<p>Entries will be automatically timestamped.</p>
+<p>Example: /set?sid=accelerometer1&x=123.4&y=45.3&z=34.2</p>
+
+<h3>/get</h3>
+<p>/get?[sid=&lt;s&gt;]&amp;n=&lt;n&gt; - retrieve entries from the store, most recent first.<br>
+If sid is provided, retrieves entires for that sensor id.
+If n is provided, retrieves n entries, in descending timestamp order (most recent first). If n is omitted, n=1 is assumed and only the one entry is returned.</p>
+
+<h3>/list</h3>
+<p>Returns a list of all unique sensor ids (sid) in the store.</p>
+</div>
