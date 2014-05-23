@@ -6,14 +6,68 @@ This page
 
 <h3>/set</h3>
 <p>/set?sid=&lt;s&gt;&amp;param1=&lt;value1&gt;&amp;param2=&lt;value2&gt; - save a new sensor entry for sensor id s with param1=value2, param2=value2 etc.</p>
-<p>Entries will be automatically timestamped.</p>
-<p>Example: /set?sid=accelerometer1&x=123.4&y=45.3&z=34.2</p>
+<p>Entries will be automatically timestamped. Responses return a JSON object corresponding to the inserted entry.</p>
+<h4>Example Request:</h4>
+<p>http://husk.eecs.berkeley.edu:8080/set?sid=accelerometer1&x=123.4&y=45.3&z=34.2</p>
+<h4>Example Response:</h4>
+<pre>
+{
+  "sid": "accelerometer1",
+  "x": "123.4",
+  "y": "45.3",
+  "z": "34.2",
+  "createdAt": "2014-05-23T09:22:42.679Z",
+  "updatedAt": "2014-05-23T09:22:42.679Z",
+  "id": 849
+}
+</pre>
+<hr>
 
 <h3>/get</h3>
 <p>/get?[sid=&lt;s&gt;]&amp;n=&lt;n&gt; - retrieve entries from the store, most recent first.<br>
 If sid is provided, retrieves entires for that sensor id.
 If n is provided, retrieves n entries, in descending timestamp order (most recent first). If n is omitted, n=1 is assumed and only the one entry is returned.</p>
+<h4>Example Requests:</h4>
+<ul>
+  <li>http://husk.eecs.berkeley.edu:8080/get - returned the latest single reading in the database (could be any sensor)</li>
+  <li>http://husk.eecs.berkeley.edu:8080/get?sid=temp1 - returns the latest single reading for the sensor "temp1"</li>
+  <li>http://husk.eecs.berkeley.edu:8080/get?sid=temp1&n=3 - returns the latest 3 readings for the sensor "temp1" (output shown below)</li>
+  <li>http://husk.eecs.berkeley.edu:8080/get?n=10 - returns the latest 10 readings submitted by any sensors</li>
+</ul>
+<h4>Example Output:</h4>
+<pre>
+[
+  {
+    "sid": "temp1",
+    "value": "0.287017",
+    "createdAt": "2014-05-23T09:20:14.532Z",
+    "updatedAt": "2014-05-23T09:20:14.532Z",
+    "id": 701
+  },
+  {
+    "sid": "temp1",
+    "value": "0.278277",
+    "createdAt": "2014-05-23T09:20:13.529Z",
+    "updatedAt": "2014-05-23T09:20:13.529Z",
+    "id": 700
+  },
+  {
+    "sid": "temp1",
+    "value": "0.283031",
+    "createdAt": "2014-05-23T09:20:12.525Z",
+    "updatedAt": "2014-05-23T09:20:12.525Z",
+    "id": 699
+  }
+]
+</pre>
+
 
 <h3>/list</h3>
-<p>Returns a list of all unique sensor ids (sid) in the store.</p>
+<p>Returns a list of all unique sensor ids (sid) in the store as a JSON array.</p>
+<h4>Example Response</h4>
+<pre>
+[
+  "temp1",
+  "accelerometer1"
+]
 </div>
