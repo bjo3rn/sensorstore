@@ -1,0 +1,2 @@
+# sensorstore
+### a Sails application
