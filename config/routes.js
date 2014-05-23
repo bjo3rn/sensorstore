@@ -45,11 +45,13 @@ module.exports.routes = {
   },
   '/get': {
     controller: 'Sensors',
-    action:'tail'
+    action:'tail',
+    cors: true
   },
   '/list': {
     controller: 'Sensors',
-    action:'list'
+    action:'list',
+    cors: true
   }
   
   /*
