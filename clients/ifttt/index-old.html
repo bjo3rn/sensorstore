@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!--Swarm Lab Retreat May 2014 - Example rule-based actions -->
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 14px sans-serif;
+}
+div#runcontrol, div#ruleList {
+	background-color:#cccccc;
+}
+</style>
+
+<body>
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script>
+
+  /*********************
+   * MODIFY THIS BLOCK
+   **********************/
+
+  //CHANGE ME: wait time between rule executions in ms
+  var pollingInterval = 1000;
+
+  //CHANGE ME:
+  //add sensors you are interested in
+  //available sensor ids are listed at http://husk.eecs.berkeley.edu:8080/list
+  //to view the format of a sensor entry, look at, for example: http://husk.eecs.berkeley.edu:8080/get?sid=sensortag_acc_51
+  var sensors = ["sensortag_acc_51","sensortag_mag_51"];
+ 
+  //CHANGE ME:
+  //add additional rules following the recipe below
+  //JSON with sensor values will be passed into the function
+  var rules = [];
+  rules.push(function(values) {
+  	//simple rule that compares a value to a threshold
+  	if(values["sensortag_acc_51"]["x"]>50) {
+  		pagelog("yes!");
+  	} else {
+  		pagelog("no!");
+  	}
+  });
+
+  rules.push(function(values){
+  	if(new Date().getTime()%2==0) {
+  		pagelog("even");
+  	} else {
+  		pagelog("odd");
+  	}
+  });
+
+</script>
+
+
+
+<script>
+  /************************************************************
+   * No Need to edit code below
+   ************************************************************/
+  // Sensorstore URL
+  var sensorStoreURL = "http://husk.eecs.berkeley.edu:8080/get?sid=";
+  
+  // write a message to the page
+  function pagelog(msg) {
+  	$("#log").append(msg+"<br/>");
+  }
+  
+  // reads status of "run" checkbox and schedules next runloop if checked
+  function runAgainIfChecked() {
+  	if($("#runcheckbox").is(":checked")) {
+  		setTimeout(runloop,pollingInterval);
+	}
+  }
+
+  //runloop
+  function runloop() {
+	  var currentValues = {};
+	  // get all current values for sensors of interest as JSON blocks
+	  sensors.forEach(function(sid){
+	  	$.getJSON(sensorStoreURL+sid,function(data) {
+	  		console.log('data');
+	  		console.log(data[0]);
+	  		currentValues[sid] = data[0];
+	  		//have we received all required JSON objects?
+	  		console.log("length check");
+	  		
+	  		if(Object.keys(currentValues).length==sensors.length){
+	  			//execute the rules
+				console.log(currentValues);
+	  			rules.forEach(function(rule){
+	  				rule(currentValues);
+	  			});
+	  			runAgainIfChecked();
+	  		}
+	  		});	
+	  });
+  }
+
+  //Once page has loaded, start our runloop
+  $(document).ready(function(){
+  	$("#ruleSource").append(rules.toString());
+    runloop();
+  });
+  
+</script>
+
+<h1>If-This-Then-That Rule Demo</h1>
+<div id="runcontrol" >
+	<h3>Run Control</h3>
+<input type="checkbox" id="runcheckbox" onClick="runAgainIfChecked()"> Run rules 
+</div>
+<div id="ruleList"><h3>Defined Rules:</h3><pre id="ruleSource"></pre></div>
+<div id="log"><h3>Log</h3></div>
+
+</body>

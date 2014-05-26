@@ -94,24 +94,33 @@ module.exports = {
 		// The User was created successfully!
   		}else {
 			//let Edward's ptango know
-			var newQuery = _und.clone(req.query);
-			newQuery.id = req.query.sid;
-			delete newQuery["sid"];
-			delete newQuery["createdAt"];
-			delete newQuery["updatedAt"];
-			var options = {
-			  host: 'ptango.eecs.berkeley.edu',
-			  port: 8077,
-			  path: '/keyvalue/set?'+querystring.stringify(newQuery)
-			};
+			Object.keys(req.query).forEach(function(key){
+				
+				if ((key!="sid") && (key!="createdAt") && (key!="updatedAt")){
+					var idSuffix="";
+					if (key=="value") {
+						idSuffix="";
+					} else {
+						idSuffix="_"+key;
+					}
+					var newQuery = {'id' : req.query['sid']+idSuffix, 'value': req.query[key]};
+					//console.log(newQuery);				
+					var options = {
+					  host: 'ptango.eecs.berkeley.edu',
+					  port: 8077,
+					  path: '/keyvalue/set?'+querystring.stringify(newQuery)
+					};
+
+					http.get(options, function(resp){
+					  resp.on('data', function(chunk){
+					    //do something with chunk
+					  });
+					}).on("error", function(e){
+					  console.log("Got error when posting to ptango: " + e.message);
+					});
+				}
+			})
 			
-			http.get(options, function(resp){
-			  resp.on('data', function(chunk){
-			    //do something with chunk
-			  });
-			}).on("error", function(e){
-			  console.log("Got error when posting to ptango: " + e.message);
-			});
     		return res.json(entry);
   		}
 
