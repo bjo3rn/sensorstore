@@ -4,7 +4,7 @@
 <style>
 
 body {
-  font: 10px sans-serif;
+  font: 14px sans-serif;
 }
 
 .axis path,
@@ -20,10 +20,45 @@ body {
 
 .line {
   fill: none;
-  stroke: steelblue;
   stroke-width: 1.5px;
 }
+.dataset0 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: steelblue;
+  
+}
+.dataset1 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: red;
 
+}
+.dataset2 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: green;
+
+}
+.dataset3 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: gray;
+}
+.legend0 {
+  color: steelblue;
+}
+.legend1 {
+  color: red;
+
+}
+.legend2 {
+  color: green;
+
+}
+.legend3 {
+  color: gray;
+}
 </style>
 <body>
   Select a sensor stream to visualize: 
@@ -38,13 +73,14 @@ body {
   </select>
   <button type="button" onClick="redrawChart();">Redraw</button>
   <h2 id="chartname"></h2>
+  <div id="legend"></div>
 <script src="http://d3js.org/d3.v3.js"></script>
 
 <script>
 var taxonomy = [
   {
     "name": "TI SensorTag Accelerometer",
-    "regex": /sensortag_acc.*/,
+    "regex": /sensortag_[0-9]*_acc/,
     "inputs": {
       "x": {
         "type": "float",
@@ -69,7 +105,7 @@ var taxonomy = [
   },
   {
     "name": "TI SensorTag Magnetometer",
-    "regex": /sensortag_mag.*/,
+    "regex": /sensortag_[0-9]*_mag/,
     "inputs": {
       "x": {
         "type": "float",
@@ -94,7 +130,7 @@ var taxonomy = [
   },
   {
     "name": "TI SensorTag Button",
-    "regex": /sensortag_button.*/,
+    "regex": /sensortag_[0-9]*_button/,
     "inputs": {
       "button1": {
         "type": "int",
@@ -110,7 +146,27 @@ var taxonomy = [
       }
     },
     "outputs": {}
-  },  
+  },
+  {
+    "name": "TI SensorTag Temperature",
+    "regex": /sensortag_[0-9]*_temperature/,
+    "inputs": {
+      "temperature": {
+        "type": "float",
+        "unit": "Fahrenheit",
+        "min": 0.0,
+        "max": 120.0,
+      },
+      "humidity": {
+        "type": "float",
+        "unit": "percent",
+        "min": 0.0,
+        "max": 100.0
+      }
+    },
+    "outputs": {}
+  },
+	  
   {
     "name": "Temperature Sensor",
     "regex": /temp.*/,
@@ -147,6 +203,32 @@ var taxonomy = [
         "min": 0,
         "max": 3.3
       }
+    },
+    "outputs": {}
+  },
+  {
+    "name": "OpenWeatherMap Weather",
+    "regex": /weather_.*/,
+    "inputs": {
+      "temp": {
+        "type": "float",
+        "unit": "Fahrenheit",
+        "min": 0.0,
+        "max": 120.0
+      },
+      "humidity": {
+        "type": "float",
+        "unit": "Percent",
+        "min": 0.0,
+        "max": 100.0
+      },
+      "windspeed": {
+        "type": "float",
+        "unit": "mps",
+        "min": 0.0,
+        "max": 100.0
+      }
+
     },
     "outputs": {}
   }
@@ -217,17 +299,20 @@ function redrawChart() {
 
   //update title
   d3.select("#chartname").html("Sensor readings for "+taxonomy[i].name+" ("+selectedKey+")");
-
+  d3.select("#legend").html("");
 
   svg.selectAll("*").remove(); //clear
   
   var numLines = Object.keys(inputs).length;
   
   var lines=[];
+  var i=0;
   Object.keys(inputs).forEach(function(input) {
    lines.push(d3.svg.line()
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d[input]); }));
+   d3.select("#legend").append("div").attr("class","legend"+i).html(input);
+   i=i+1;
   });
 
   //Get 100 data points as the JSON from our store for the selected sensor
@@ -258,7 +343,10 @@ function redrawChart() {
   x.domain(d3.extent(data, function(d) { return d.date; }));
   //y.domain(d3.extent(data, function(d) { return d.close; }));
   y.domain([inputs[Object.keys(inputs)[0]]["min"],inputs[Object.keys(inputs)[0]]["max"]]); //look up in taxonomy
-
+  var yAxisLabel = "";
+  Object.keys(inputs).forEach(function(thisInput) {
+    yAxisLabel+=inputs[thisInput]["unit"]+" / ";
+  });
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
@@ -272,14 +360,17 @@ function redrawChart() {
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text(inputs[Object.keys(inputs)[0]]["unit"]);
+      .text(yAxisLabel);//inputs[Object.keys(inputs)[0]]["unit"]);
   console.log("194");
   console.log(lines);
+  var i=0;
   lines.forEach(function(aLine) {
+
     svg.append("path")
       .datum(data)
-      .attr("class", "line")
+      .attr("class","dataset"+i.toString())
       .attr("d", aLine);  
+    i=i+1;
   });
   
 });
