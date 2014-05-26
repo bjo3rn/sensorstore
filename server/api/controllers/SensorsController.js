@@ -14,7 +14,10 @@
  *
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
-_und = require('underscore');
+var _und = require('underscore');
+var http = require('http');
+var querystring = require('querystring');
+
 module.exports = {
     
   
@@ -81,7 +84,7 @@ module.exports = {
   },
 
   
-  /** /create is more flexible, but this is to have compatibility with Edward's server 
+  //create is more flexible, but this is to have compatibility with Edward's server 
   set: function(req,res,next) {
   	Sensors.create(req.query).done(function(err,entry){
   		// Error handling
@@ -90,12 +93,31 @@ module.exports = {
     		return next(err);
 		// The User was created successfully!
   		}else {
+			//let Edward's ptango know
+			var newQuery = _und.clone(req.query);
+			newQuery.id = req.query.sid;
+			delete newQuery["sid"];
+			delete newQuery["createdAt"];
+			delete newQuery["updatedAt"];
+			var options = {
+			  host: 'ptango.eecs.berkeley.edu',
+			  port: 8077,
+			  path: '/keyvalue/set?'+querystring.stringify(newQuery)
+			};
+			
+			http.get(options, function(resp){
+			  resp.on('data', function(chunk){
+			    //do something with chunk
+			  });
+			}).on("error", function(e){
+			  console.log("Got error when posting to ptango: " + e.message);
+			});
     		return res.json(entry);
   		}
 
   	});
   },
-*/
+
 
 
   /**

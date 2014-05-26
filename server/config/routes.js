@@ -41,7 +41,8 @@ module.exports.routes = {
   },
   '/set': {
     controller: 'Sensors',
-    action:'create'
+    action:'set',
+ 	cors:true
   },
   '/get': {
     controller: 'Sensors',
