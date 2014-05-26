@@ -13,6 +13,19 @@
  */
 
 module.exports.adapters = {
+  'default': 'mongo',
+
+  mongo: {
+    module: 'sails-mongo',
+    host: 'localhost',
+    port: 27017,
+    user: 'sensorstoreuser',
+    password: 'sensorstorepwd',
+    database: 'sensorstore'
+  }
+};
+/*
+module.exports.adapters = {
 
   // If you leave the adapter config unspecified 
   // in a model definition, 'default' will be used.
@@ -37,3 +50,4 @@ module.exports.adapters = {
     database: 'YOUR_MYSQL_DB'
   }
 };
+*/

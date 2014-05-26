@@ -26,14 +26,14 @@ module.exports = {
    	var sid = req.param("sid");
    	if(sid) {
    		//return the latest single reading for a sensor
-    	Sensors.find({sid: sid}).limit(1).sort('createdAt DESC').done(function(err, reading) {
+    	Sensors.find({sid: sid}).sort('createdAt DESC').limit(1).done(function(err, reading) {
     		if(reading === undefined) return res.notFound();
     		if (err) return next(err);
     		return res.json(reading);
     	});
     } else {
     	//return the latest across all sensors
-    	Sensors.find().limit(1).sort('createdAt DESC').done(function(err, reading) {
+    	Sensors.find().sort('createdAt DESC').limit(1).done(function(err, reading) {
     		if(reading === undefined) return res.notFound();
     		if (err) return next(err);
     		return res.json(reading);
@@ -54,14 +54,14 @@ module.exports = {
    	
    	if(sid) {
    		
-    	Sensors.find({sid: sid}).limit(n).sort('createdAt DESC').done(function(err, reading) {
+    	Sensors.find({sid: sid}).sort('createdAt DESC').limit(n).done(function(err, reading) {
     		if(reading === undefined) return res.notFound();
     		if (err) return next(err);
     		return res.json(reading);
     	});
     } else {
     	//return the latest across all sensors
-    	Sensors.find().limit(n).sort('createdAt DESC').done(function(err, reading) {
+    	Sensors.find().sort('createdAt DESC').limit(n).done(function(err, reading) {
     		if(reading === undefined) return res.notFound();
     		if (err) return next(err);
     		return res.json(reading);
@@ -80,6 +80,7 @@ module.exports = {
     });
   },
 
+  
   /** /create is more flexible, but this is to have compatibility with Edward's server 
   set: function(req,res,next) {
   	Sensors.create(req.query).done(function(err,entry){
