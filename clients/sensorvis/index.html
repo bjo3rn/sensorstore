@@ -29,6 +29,13 @@ body {
   Select a sensor stream to visualize: 
   <select id="keys" onChange="redrawChart();">
   </select> 
+  # Readings: <select id="numReadings" onChange="redrawChart();">
+    <option value="50">50</option>
+    <option value="100" selected>100</option>
+    <option value="200">200</option>
+    <option value="500">500</option>
+    <option value="1000">1000</option>
+  </select>
   <button type="button" onClick="redrawChart();">Redraw</button>
   <h2 id="chartname"></h2>
 <script src="http://d3js.org/d3.v3.js"></script>
@@ -129,6 +136,19 @@ var taxonomy = [
       }
     },
     "outputs": {}
+  },
+   {
+    "name": "Electric Imp Analog Input",
+    "regex": /imp.*_adc.*/,
+    "inputs": {
+      "value": {
+        "type": "float",
+        "unit": "Volt",
+        "min": 0,
+        "max": 3.3
+      }
+    },
+    "outputs": {}
   }
 ]
 </script>
@@ -180,6 +200,7 @@ var svg = d3.select("body").append("svg")
 function redrawChart() {
   //get the name of the selected item
   var selectedKey = document.getElementById("keys").options[document.getElementById("keys").selectedIndex].value;
+  var numReadings = document.getElementById("numReadings").options[document.getElementById("numReadings").selectedIndex].value;
   var inputs;
   
   
@@ -210,7 +231,7 @@ function redrawChart() {
   });
 
   //Get 100 data points as the JSON from our store for the selected sensor
-  d3.json("http://husk.eecs.berkeley.edu:8080/get?sid="+selectedKey+"&n=100", function(error, data) {
+  d3.json("http://husk.eecs.berkeley.edu:8080/get?sid="+selectedKey+"&n="+numReadings, function(error, data) {
   
 
   data.forEach(function(d) {
