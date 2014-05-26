@@ -1,0 +1,17 @@
+{
+  "name": "bart",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Sends BART real-time data to sensor store",
+  "dependencies": {
+    "xml2js": "0.x.x"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "debug": "node debug server.js"
+  },
+  "main": "server.js",
+  "repository": "",
+  "author": "",
+  "license": ""
+}

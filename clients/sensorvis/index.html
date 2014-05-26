@@ -231,6 +231,25 @@ var taxonomy = [
 
     },
     "outputs": {}
+  },
+  {
+    "name": "BART Departures",
+    "regex": /bart_.*_departures/,
+    "inputs": {
+      "South": {
+        "type": "int",
+        "unit": "minutes",
+        "min": 0,
+        "max": 90
+      },
+      "North": {
+        "type": "int",
+        "unit": "minutes",
+        "min": 0,
+        "max": 90
+      },
+    },
+    "outputs": {}
   }
 ]
 </script>
@@ -252,7 +271,8 @@ var margin = {top: 20, right: 20, bottom: 30, left: 50},
     height = 500 - margin.top - margin.bottom;
 
 var parseDate = d3.time.format("%d-%b-%y").parse;
-var parseSailsDate = d3.time.format("%Y-%m-%dT%H:%M:%S.%LZ").parse;
+//var parseSailsDate = d3.time.format("%Y-%m-%dT%H:%M:%S.%LZ").parse;
+var parseSailsDate = d3.time.format.iso.parse;
 
 var x = d3.time.scale()
     .range([0, width]);
@@ -310,7 +330,8 @@ function redrawChart() {
   Object.keys(inputs).forEach(function(input) {
    lines.push(d3.svg.line()
     .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d[input]); }));
+    .y(function(d) { return y(d[input]); })
+    .defined(function(d) { return !isNaN(y(d[input])); }));
    d3.select("#legend").append("div").attr("class","legend"+i).html(input);
    i=i+1;
   });
@@ -341,6 +362,7 @@ function redrawChart() {
 
 
   x.domain(d3.extent(data, function(d) { return d.date; }));
+  x.tickFormat(d3.time.format("%H:%M"));
   //y.domain(d3.extent(data, function(d) { return d.close; }));
   y.domain([inputs[Object.keys(inputs)[0]]["min"],inputs[Object.keys(inputs)[0]]["max"]]); //look up in taxonomy
   var yAxisLabel = "";
