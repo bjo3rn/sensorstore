@@ -1,0 +1,24 @@
+function getPin9Voltage() 
+{
+    // Returns value in volts, between 0.0 and 3.3
+
+    local voltage = hardware.voltage();
+    local reading = hardware.pin9.read();
+    //server.log(reading);
+    return (reading / 65535.0) * voltage;
+}
+
+function sample()
+{
+    //server.log("voltage on imp side");
+    agent.send("adc9", getPin9Voltage());
+    imp.wakeup(1, sample);
+}
+
+// Set up imp Pin 9 as an analog input
+
+hardware.pin9.configure(ANALOG_IN);
+
+// Start sampling the voltage on Pin 9
+agent.send("id",hardware.getdeviceid());
+sample();

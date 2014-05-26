@@ -1,0 +1,60 @@
+// adapted from:
+// https://github.com/tinkerthon/electricimp-blinkm/blob/master/blinkm_agent.squirrel
+server.log("RGB: " + http.agenturl() + "?rgb=xRRGGBB");
+
+/**
+ * Convert hex string to an integer
+ * @see http://devwiki.electricimp.com/doku.php?id=webcolor
+ */
+function hex2int(hex) {
+  //server.log("HEX: " + hex);
+  local result = 0;
+  local shift = hex.len() * 4;
+ 
+  for (local d=0; d < hex.len(); d++) {
+    local digit;
+ 
+    if (hex[d] >= 0x61)
+      digit = hex[d] - 0x57;
+    else 
+    if (hex[d] >= 0x41)
+      digit = hex[d] - 0x37;
+    else
+      digit = hex[d] - 0x30;
+ 
+    shift -= 4;
+    result += digit << shift;
+  }
+  return result;
+}
+
+function requestHandler(request, response) {
+  try {
+    if ("rgb" in request.query) {
+      //server.log("RGB: " + request.query.rgb)
+      local color = request.query.rgb;
+      local returnTable = {
+        r = hex2int(color.slice(1,3)),
+        g = hex2int(color.slice(3,5)),
+        b = hex2int(color.slice(5,7))
+      };
+      device.send("rgb", returnTable);
+    }
+    
+    //if ("return" in request.query) {
+    //  response.header("Location", request.query.return);
+    //  response.send(301, "Moved");
+    //    }
+    //else 
+    //{
+      // https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
+      response.header("Access-Control-Allow-Origin", "*");
+      response.send(200, "OK");
+    //}
+  } 
+  catch (ex) {
+    response.send(500, "Internal Server Error: " + ex);
+  }
+}
+
+http.onrequest(requestHandler);

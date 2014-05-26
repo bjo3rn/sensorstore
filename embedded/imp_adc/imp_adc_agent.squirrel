@@ -1,0 +1,20 @@
+LOGURL <- "http://husk.eecs.berkeley.edu:8080/set?sid=impaa_adc9";
+
+// Log the device's ID
+//server.log("Device's unique id: " + hardware.getdeviceid());
+
+function setDeviceID(data)
+{
+    LOGURL = "http://husk.eecs.berkeley.edu:8080/set?sid=imp_"+data+"_adc9";
+}
+function postData(data)
+{
+    //server.log("voltage on agent side");
+    local myURL = LOGURL+"&value="+data;
+    server.log(myURL);
+    local request = http.get(myURL);
+    local response = request.sendsync();
+}
+
+device.on("adc9", postData); 
+device.on("id", setDeviceID);

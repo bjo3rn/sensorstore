@@ -1,0 +1,42 @@
+/**
+ * Adapted from 
+ * https://github.com/tinkerthon/electricimp-blinkm/blob/master/blinkm_device.squirrel
+ * https://gist.github.com/mezelve/4111064
+ */
+
+// BlinkM controlled by a web form
+// http://thingm.com/products/blinkm.html
+server.log("BlinkM Started");
+
+local addr = 0x09;
+local rgb = null;
+local i2cPort = null;
+
+// Hardware Configuration
+//pin 8 -> SCL -> blinkm c
+//pin 9 -> SDA -> blinkm d
+hardware.configure(I2C_89);
+hardware.i2c89.configure(CLOCK_SPEED_100_KHZ);
+i2cPort = hardware.i2c89;
+
+function writeAddr() {
+  i2cPort.write(0x00, format("%c%c", addr >> 8, addr & 0xff));
+}
+
+function setRGB(rgbValue) {
+  server.log(rgbValue.r+", "+rgbValue.g+", "+rgbValue.b);
+  
+  // blinkm: stop script
+  writeAddr(); i2cPort.write(0x00, "o");
+  
+  // "f" -> Set Fade Speed, 1 -> slow, 255 -> instantly 
+  writeAddr(); i2cPort.write(0x00, format("f%c", 10));
+  
+  // data c%c%c%c -> "c" + r + g + b
+  // "c" -> Fade to RGB Color
+  // "n" -> Go to RGB Color Now
+  writeAddr(); i2cPort.write(0x00, format("c%c%c%c", rgbValue.r, rgbValue.g, rgbValue.b));      
+}  
+  
+server.log(imp.getsoftwareversion());
+agent.on("rgb", setRGB);
