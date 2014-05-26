@@ -26,7 +26,123 @@ body {
 
 </style>
 <body>
+  Select a sensor stream to visualize: 
+  <select id="keys" onChange="redrawChart();">
+  </select> 
+  <button type="button" onClick="redrawChart();">Redraw</button>
+  <h2 id="chartname"></h2>
 <script src="http://d3js.org/d3.v3.js"></script>
+
+<script>
+var taxonomy = [
+  {
+    "name": "TI SensorTag Accelerometer",
+    "regex": /sensortag_acc.*/,
+    "inputs": {
+      "x": {
+        "type": "float",
+        "unit": "g",
+        "min": -2,
+        "max": 2
+      },
+      "y": {
+        "type": "float",
+        "unit": "g",
+        "min": -2,
+        "max": 2
+      },
+      "z": {
+        "type": "float",
+        "unit": "g",
+        "min": -2,
+        "max": 2
+      }
+    },
+    "outputs": {}
+  },
+  {
+    "name": "TI SensorTag Magnetometer",
+    "regex": /sensortag_mag.*/,
+    "inputs": {
+      "x": {
+        "type": "float",
+        "unit": "uTesla",
+        "min": -1000,
+        "max": 1000
+      },
+      "y": {
+        "type": "float",
+        "unit": "uTesla",
+        "min": -1000,
+        "max": 1000
+      },
+      "z": {
+        "type": "float",
+        "unit": "uTesla",
+        "min": -1000,
+        "max": 1000
+      }
+    },
+    "outputs": {}
+  },
+  {
+    "name": "TI SensorTag Button",
+    "regex": /sensortag_button.*/,
+    "inputs": {
+      "button1": {
+        "type": "int",
+        "unit": "on-off",
+        "min": 0,
+        "max": 1
+      },
+      "button2": {
+        "type": "int",
+        "unit": "on-off",
+        "min": 0,
+        "max": 1
+      }
+    },
+    "outputs": {}
+  },  
+  {
+    "name": "Temperature Sensor",
+    "regex": /temp.*/,
+    "inputs": {
+      "value": {
+        "type": "float",
+        "unit": "Fahrenheit",
+        "min": 0,
+        "max": 3.3
+      }
+    },
+    "outputs": {}
+  },
+  {
+    "name": "Button",
+    "regex": /cc3k.?.?btn.*/,
+    "inputs": {
+      "value": {
+        "type": "int",
+        "unit": "on-off",
+        "min": 0,
+        "max": 1
+      }
+    },
+    "outputs": {}
+  }
+]
+</script>
+<script>  
+  d3.json("http://husk.eecs.berkeley.edu:8080/list", function(error, data) {
+    var selectKeys = d3.select("#keys");
+    data.forEach(function(d) {
+      selectKeys.append("option").attr("value",d).html(d);
+    }
+    );
+    redrawChart();
+  });
+
+</script>
 <script>
 
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -49,32 +165,78 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
-
+/*
 var line = d3.svg.line()
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.close); });
-
+*/
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.json("http://husk.eecs.berkeley.edu:8080/get?sid=temp1&n=100", function(error, data) {
-  data.forEach(function(d) {
-	if(d.createdAt) {
-	  //console.log(d.createdAt);
-	  d.date = parseSailsDate(d.createdAt);
-	}
-	if(d.value) {
-		d.close = parseFloat(d.value);
-	}
+//
+function redrawChart() {
+  //get the name of the selected item
+  var selectedKey = document.getElementById("keys").options[document.getElementById("keys").selectedIndex].value;
+  var inputs;
+  
+  
+  var taxonomyIndex;
+  //look up this sensor's inputs in the taxonomy
+  for(var i=0; i<taxonomy.length; i++) {
+    if (taxonomy[i].regex.test(selectedKey)) {
+        taxonomyIndex=i;
+        inputs = taxonomy[i].inputs;
+      break;
+    }
+  }
+  console.log(inputs);
 
+  //update title
+  d3.select("#chartname").html("Sensor readings for "+taxonomy[i].name+" ("+selectedKey+")");
+
+
+  svg.selectAll("*").remove(); //clear
+  
+  var numLines = Object.keys(inputs).length;
+  
+  var lines=[];
+  Object.keys(inputs).forEach(function(input) {
+   lines.push(d3.svg.line()
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d[input]); }));
+  });
+
+  //Get 100 data points as the JSON from our store for the selected sensor
+  d3.json("http://husk.eecs.berkeley.edu:8080/get?sid="+selectedKey+"&n=100", function(error, data) {
+  
+
+  data.forEach(function(d) {
+    //parse and clean up date
+	  if(d.createdAt) {
+  	  d.date = parseSailsDate(d.createdAt);
+	  }
+    /*
+    //rely on automatic conversion for now
+    //should iterate here.
+    var inputName = Object.keys(inputs)[0]; 
+    //console.log(inputs);
+    var inputType = inputs[inputName]["type"];
+ 
+
+    if(inputType=="float") {
+      d.close = parseFloat(d[inputName]);  
+    } //TODO: handle other types
+    */
+  
   });
 
 
   x.domain(d3.extent(data, function(d) { return d.date; }));
-  y.domain(d3.extent(data, function(d) { return d.close; }));
+  //y.domain(d3.extent(data, function(d) { return d.close; }));
+  y.domain([inputs[Object.keys(inputs)[0]]["min"],inputs[Object.keys(inputs)[0]]["max"]]); //look up in taxonomy
 
   svg.append("g")
       .attr("class", "x axis")
@@ -89,13 +251,18 @@ d3.json("http://husk.eecs.berkeley.edu:8080/get?sid=temp1&n=100", function(error
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Temperature (Fahrenheit)");
-
-  svg.append("path")
+      .text(inputs[Object.keys(inputs)[0]]["unit"]);
+  console.log("194");
+  console.log(lines);
+  lines.forEach(function(aLine) {
+    svg.append("path")
       .datum(data)
       .attr("class", "line")
-      .attr("d", line);
+      .attr("d", aLine);  
+  });
+  
 });
+}
 
 </script>
 </body>
