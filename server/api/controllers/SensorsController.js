@@ -104,7 +104,8 @@ module.exports = {
 						idSuffix="_"+key;
 					}
 					var newQuery = {'id' : req.query['sid']+idSuffix, 'value': req.query[key]};
-					//console.log(newQuery);				
+					//
+					console.log(newQuery);				
 					var options = {
 					  host: 'ptango.eecs.berkeley.edu',
 					  port: 8077,

@@ -8,7 +8,7 @@ This page
 <p>/set?sid=&lt;s&gt;&amp;param1=&lt;value1&gt;&amp;param2=&lt;value2&gt; - save a new sensor entry for sensor id s with param1=value2, param2=value2 etc.</p>
 <p>Entries will be automatically timestamped. Responses return a JSON object corresponding to the inserted entry.</p>
 <h4>Example Request:</h4>
-<p>http://husk.eecs.berkeley.edu:8080/set?sid=accelerometer1&x=123.4&y=45.3&z=34.2</p>
+<p><a href="http://husk.eecs.berkeley.edu:8080/set?sid=accelerometer1&x=123.4&y=45.3&z=34.2">http://husk.eecs.berkeley.edu:8080/set?sid=accelerometer1&x=123.4&y=45.3&z=34.2</a></p>
 <h4>Example Response:</h4>
 <pre>
 {
@@ -29,10 +29,10 @@ If sid is provided, retrieves entires for that sensor id.
 If n is provided, retrieves n entries, in descending timestamp order (most recent first). If n is omitted, n=1 is assumed and only the one entry is returned.</p>
 <h4>Example Requests:</h4>
 <ul>
-  <li>http://husk.eecs.berkeley.edu:8080/get - returned the latest single reading in the database (could be any sensor)</li>
-  <li>http://husk.eecs.berkeley.edu:8080/get?sid=temp1 - returns the latest single reading for the sensor "temp1"</li>
-  <li>http://husk.eecs.berkeley.edu:8080/get?sid=temp1&n=3 - returns the latest 3 readings for the sensor "temp1" (output shown below)</li>
-  <li>http://husk.eecs.berkeley.edu:8080/get?n=10 - returns the latest 10 readings submitted by any sensors</li>
+  <li><a href="http://husk.eecs.berkeley.edu:8080/get">http://husk.eecs.berkeley.edu:8080/get</a> - returned the latest single reading in the database (could be any sensor)</li>
+  <li><a href="http://husk.eecs.berkeley.edu:8080/get?sid=accelerometer1">http://husk.eecs.berkeley.edu:8080/get?sid=accelerometer1</a> - returns the latest single reading for the sensor "accelerometer1"</li>
+  <li><a href="http://husk.eecs.berkeley.edu:8080/get?sid=accelerometer1&n=3">http://husk.eecs.berkeley.edu:8080/get?sid=accelerometer1&n=3</a> - returns the latest 3 readings for the sensor "accelerometer1" (output shown below)</li>
+  <li><a href="http://husk.eecs.berkeley.edu:8080/get?n=10">http://husk.eecs.berkeley.edu:8080/get?n=10</a> - returns the latest 10 readings submitted by any sensors</li>
 </ul>
 <h4>Example Output:</h4>
 <pre>
@@ -63,6 +63,10 @@ If n is provided, retrieves n entries, in descending timestamp order (most recen
 
 
 <h3>/list</h3>
+<h4>Example Requests:</h4>
+<ul>
+  <li><a href="http://husk.eecs.berkeley.edu:8080/list">http://husk.eecs.berkeley.edu:8080/list</a>
+</ul>
 <p>Returns a list of all unique sensor ids (sid) in the store as a JSON array.</p>
 <h4>Example Response</h4>
 <pre>
