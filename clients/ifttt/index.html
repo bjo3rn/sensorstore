@@ -106,12 +106,12 @@ div#runcontrol, div#ruleList {
         });
     eval(editor.getSession().getValue());
     console.log(editor.getSession().getValue());
-    runloop();
+    //runloop();
   });
   
 </script>
 
-<h1>If-This-Then-That Rule Demo</h1>
+<h1>Rule-based Swarmlets</h1>
 <div id="runcontrol" >
 <input type="checkbox" id="runcheckbox" onClick="runAgainIfChecked()"> Run rules 
 </div>
@@ -124,26 +124,27 @@ pollingInterval = 1000;
 //add sensors you are interested in
 //available sensor ids are listed at http://husk.eecs.berkeley.edu:8080/list
 //to view the format of a sensor entry, look at, for example: http://husk.eecs.berkeley.edu:8080/get?sid=sensortag_acc_51
-sensors = ["sensortag_acc_51","sensortag_mag_51"];
+sensors = ["weather_berkeley_ca","sensortag_51_temperature"];
 
 //CHANGE ME:
 //add additional rules following the recipe below
 //JSON with sensor values will be passed into the function
 rules = [];
 rules.push(function(values) {
-    //simple rule that compares a value to a threshold
-    if(values["sensortag_acc_51"]["x"]>50) {
-        pagelog("yes!");
+    //compare temperature from weather API (outside) to sensortag temperature (inside)
+    if(values["weather_berkeley_ca"]["temp"]>values["sensortag_51_temperature"]["temperature"]) {
+        pagelog("It's warmer outside.");
     } else {
-        pagelog("no!");
+        pagelog("It's colder outside.");
     }
 });
 
-rules.push(function(values){
-    if(new Date().getTime()%2==0) {
-        pagelog("even");
+rules.push(function(values) {
+    //compare humidity from weather API (outside) to sensortag humidity (inside)
+    if(values["weather_berkeley_ca"]["humidity"]>values["sensortag_51_temperature"]["humidity"]) {
+        pagelog("It's more humid outside.");
     } else {
-        pagelog("odd");
+        pagelog("It's less humid outside.");
     }
 });
 </textarea>
