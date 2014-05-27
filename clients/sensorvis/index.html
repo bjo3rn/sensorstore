@@ -251,6 +251,40 @@ var taxonomy = [
     },
     "outputs": {}
   },
+  {
+    "name": "Electric Imp Multi Analog Input",
+    "regex": /imp_[0-9a-f]*/,
+    "inputs": {
+      "pin5": {
+        "type": "float",
+        "unit": "Volt",
+        "min": 0,
+        "max": 3.3
+      },
+        "pin7": {
+        "type": "float",
+        "unit": "Volt",
+        "min": 0,
+        "max": 3.3
+      },
+            "pin8": {
+        "type": "float",
+        "unit": "Volt",
+        "min": 0,
+        "max": 3.3
+      },
+            "pin9": {
+        "type": "float",
+        "unit": "Volt",
+        "min": 0,
+        "max": 3.3
+      }
+
+
+
+    },
+    "outputs": {}
+  },
    {
     "name": "Electric Imp Analog Input",
     "regex": /imp.*_adc.*/,
