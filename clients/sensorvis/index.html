@@ -25,42 +25,100 @@ body {
 .dataset0 {
   fill: none;
   stroke-width: 1.5px;
-  stroke: steelblue;
+  stroke: #1f77b4;
   
 }
 .dataset1 {
   fill: none;
   stroke-width: 1.5px;
-  stroke: red;
+  stroke: #ff7f0e;
 
 }
 .dataset2 {
   fill: none;
   stroke-width: 1.5px;
-  stroke: green;
+  stroke: #2ca02c;
 
 }
 .dataset3 {
   fill: none;
   stroke-width: 1.5px;
-  stroke: gray;
+  stroke: #d62728;
+}
+.dataset4 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: #9467bd;
+  
+}
+.dataset5 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: #8c564b;
+
+}
+.dataset6 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: #e377c2;
+
+}
+.dataset7 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: #7f7f7f;
+}
+.dataset8 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: #bcbd22;
+
+}
+.dataset9 {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: #17becf;
 }
 .legend0 {
-  color: steelblue;
+  color: #1f77b4;
 }
 .legend1 {
-  color: red;
+  color: #ff7f0e;
 
 }
 .legend2 {
-  color: green;
+  color: #2ca02c;
 
 }
 .legend3 {
-  color: gray;
+  color:  #d62728;
+}
+.legend4 {
+  color: #9467bd;
+}
+.legend5 {
+  color: #8c564b;
+
+}
+.legend6 {
+  color: #e377c2;
+
+}
+.legend7 {
+  color:  #7f7f7f;
+}
+
+.legend8 {
+  color: #bcbd22;
+
+}
+.legend9 {
+  color:  #17becf;
 }
 </style>
 <body>
+<script src="d3.min.js"></script>
+
   Select a sensor stream to visualize: 
   <select id="keys" onChange="redrawChart();">
   </select> 
@@ -74,7 +132,7 @@ body {
   <button type="button" onClick="redrawChart();">Redraw</button>
   <h2 id="chartname"></h2>
   <div id="legend"></div>
-<script src="http://d3js.org/d3.v3.js"></script>
+<!--script src="http://d3js.org/d3.v3.js"></script-->
 
 <script>
 var taxonomy = [
@@ -208,10 +266,64 @@ var taxonomy = [
   },
 
    {
-    "name": "Swarmbot Imp Analog Input",
+    "name": "Swarmbot Analog Input",
     "regex": /swarmbot[0-9]*/,
     "inputs": {
       "A0": {
+        "type": "int",
+        "unit": "Raw reading",
+        "min": 0,
+        "max": 1023
+      },
+      "A1": {
+        "type": "int",
+        "unit": "Raw reading",
+        "min": 0,
+        "max": 1023
+      },
+      "A2": {
+        "type": "int",
+        "unit": "Raw reading",
+        "min": 0,
+        "max": 1023
+      },
+      "A3": {
+        "type": "int",
+        "unit": "Raw reading",
+        "min": 0,
+        "max": 1023
+      },
+      "A4": {
+        "type": "int",
+        "unit": "Raw reading",
+        "min": 0,
+        "max": 1023
+      },
+      "A5": {
+        "type": "int",
+        "unit": "Raw reading",
+        "min": 0,
+        "max": 1023
+      },
+      "A6": {
+        "type": "int",
+        "unit": "Raw reading",
+        "min": 0,
+        "max": 1023
+      },
+      "A7": {
+        "type": "int",
+        "unit": "Raw reading",
+        "min": 0,
+        "max": 1023
+      },
+      "A8": {
+        "type": "int",
+        "unit": "Raw reading",
+        "min": 0,
+        "max": 1023
+      },
+      "A9": {
         "type": "int",
         "unit": "Raw reading",
         "min": 0,
@@ -347,7 +459,8 @@ function redrawChart() {
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d[input]); })
     .defined(function(d) { return !isNaN(y(d[input])); }));
-   d3.select("#legend").append("div").attr("class","legend"+i).html(input);
+   j=i%10;
+   d3.select("#legend").append("div").attr("class","legend"+j).html(input);
    i=i+1;
   });
 
@@ -405,7 +518,7 @@ function redrawChart() {
 
     svg.append("path")
       .datum(data)
-      .attr("class","dataset"+i.toString())
+      .attr("class","dataset"+(i%10).toString())
       .attr("d", aLine);  
     i=i+1;
   });
