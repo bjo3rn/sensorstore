@@ -77,10 +77,19 @@ module.exports = {
    *    `/sensors/list`
    */
    list: function (req, res) {
+	/*MongoDB Specific, FAST */
+	Sensors.native(function(err, collection) {
+	    // Execute any query that works with the mongo js driver
+	    collection.distinct("sid",function(err, docs) {
+	        return res.json(docs.sort());
+	    });
+	});
+	/* Generic, but SLOW
     Sensors.find().done(function(err,all){
 		if (err) return next(err);
     	return res.json(_und.uniq(_und.pluck(all,'sid')));
     });
+	*/
   },
 
   
