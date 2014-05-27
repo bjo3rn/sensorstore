@@ -206,6 +206,20 @@ var taxonomy = [
     },
     "outputs": {}
   },
+
+   {
+    "name": "Swarmbot Imp Analog Input",
+    "regex": /swarmbot[0-9]*/,
+    "inputs": {
+      "A0": {
+        "type": "int",
+        "unit": "Raw reading",
+        "min": 0,
+        "max": 1023
+      }
+    },
+    "outputs": {}
+  },
   {
     "name": "OpenWeatherMap Weather",
     "regex": /weather_.*/,
@@ -256,6 +270,7 @@ var taxonomy = [
 <script>  
   d3.json("http://husk.eecs.berkeley.edu:8080/list", function(error, data) {
     var selectKeys = d3.select("#keys");
+    data.sort();
     data.forEach(function(d) {
       selectKeys.append("option").attr("value",d).html(d);
     }
