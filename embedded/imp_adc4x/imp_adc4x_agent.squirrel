@@ -1,0 +1,43 @@
+LOGURL <- "http://husk.eecs.berkeley.edu:8080/set?sid=imp_";
+
+pin5 <- 0;
+pin7 <- 0;
+pin8 <- 0;
+pin9 <- 0;
+
+// Log the device's ID
+//server.log("Device's unique id: " + hardware.getdeviceid());
+
+function setDeviceID(data)
+{
+    LOGURL = "http://husk.eecs.berkeley.edu:8080/set?sid=imp_"+data;
+}
+
+function postData5(data)
+{
+    pin5 = data;
+}
+function postData7(data)
+{
+    pin7 = data;
+}
+
+function postData8(data)
+{
+    pin8 = data;
+}
+
+function postData9(data)
+{
+    pin9=data;
+    //server.log("voltage on agent side");
+    local myURL = LOGURL+"&pin9="+data+"&pin8="+pin8+"&pin7="+pin7+"&pin5="+pin5;
+    server.log(myURL);
+    local request = http.get(myURL);
+    local response = request.sendsync();
+}
+device.on("adc5", postData5); 
+device.on("adc7", postData7); 
+device.on("adc8", postData8); 
+device.on("adc9", postData9); 
+device.on("id", setDeviceID);

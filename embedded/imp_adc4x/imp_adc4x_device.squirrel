@@ -1,0 +1,57 @@
+function getPin9Voltage() 
+{
+    // Returns value in volts, between 0.0 and 3.3
+
+    local voltage = hardware.voltage();
+    local reading = hardware.pin9.read();
+    //server.log(reading);
+    return (reading / 65535.0) * voltage;
+}
+function getPin8Voltage() 
+{
+    // Returns value in volts, between 0.0 and 3.3
+
+    local voltage = hardware.voltage();
+    local reading = hardware.pin8.read();
+    //server.log(reading);
+    return (reading / 65535.0) * voltage;
+}
+function getPin7Voltage() 
+{
+    // Returns value in volts, between 0.0 and 3.3
+
+    local voltage = hardware.voltage();
+    local reading = hardware.pin7.read();
+    //server.log(reading);
+    return (reading / 65535.0) * voltage;
+}
+function getPin5Voltage() 
+{
+    // Returns value in volts, between 0.0 and 3.3
+
+    local voltage = hardware.voltage();
+    local reading = hardware.pin5.read();
+    //server.log(reading);
+    return (reading / 65535.0) * voltage;
+}
+
+
+function sample()
+{
+    //server.log("voltage on imp side");
+    agent.send("adc5", getPin5Voltage());
+    agent.send("adc8", getPin8Voltage());
+    agent.send("adc7", getPin7Voltage());
+    agent.send("adc9", getPin9Voltage());
+    imp.wakeup(1, sample);
+}
+
+// Set up imp Pin 9 as an analog input
+
+hardware.pin5.configure(ANALOG_IN);
+hardware.pin7.configure(ANALOG_IN);
+hardware.pin8.configure(ANALOG_IN);
+hardware.pin9.configure(ANALOG_IN);
+// Start sampling the voltage on Pin 9
+agent.send("id",hardware.getdeviceid());
+sample();
