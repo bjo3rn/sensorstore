@@ -1,43 +1,52 @@
-LOGURL <- "http://husk.eecs.berkeley.edu:8080/set?sid=imp_";
+LOGURL <- "http://husk.eecs.berkeley.edu:8080/set?sid=impaa_adc9";
 
-pin5 <- 0;
-pin7 <- 0;
-pin8 <- 0;
-pin9 <- 0;
+pin5 <- -1;
+pin7 <- -1;
+pin8 <- -1;
+pin9 <- -1;
+sid <- -1;
 
 // Log the device's ID
 //server.log("Device's unique id: " + hardware.getdeviceid());
 
 function setDeviceID(data)
 {
-    LOGURL = "http://husk.eecs.berkeley.edu:8080/set?sid=imp_"+data;
+    sid=data;
+    LOGURL = "http://husk.eecs.berkeley.edu:8080/set?sid=imp_"+sid;
 }
 
-function postData5(data)
+function processResponse(response) 
 {
-    pin5 = data;
-}
-function postData7(data)
-{
-    pin7 = data;
-}
-
-function postData8(data)
-{
-    pin8 = data;
+    // This is the completed-request callback function, which logs the
+    // incoming response's message and tatus code
+    
+    server.log("Code: " + response.statuscode);
 }
 
-function postData9(data)
-{
-    pin9=data;
-    //server.log("voltage on agent side");
-    local myURL = LOGURL+"&pin9="+data+"&pin8="+pin8+"&pin7="+pin7+"&pin5="+pin5;
+function postVoltages(pinArray) {
+    pin5 = pinArray[0];
+    pin7 = pinArray[1];
+    pin8 = pinArray[2];
+    pin9 = pinArray[3];
+    local myURL = LOGURL+"&pin9="+pin9+"&pin8="+pin8+"&pin7="+pin7+"&pin5="+pin5;
     server.log(myURL);
     local request = http.get(myURL);
-    local response = request.sendsync();
+    request.sendasync(processResponse);
+    
 }
-device.on("adc5", postData5); 
-device.on("adc7", postData7); 
-device.on("adc8", postData8); 
-device.on("adc9", postData9); 
+
 device.on("id", setDeviceID);
+device.on("table",postVoltages);
+
+function requestHandler(request, response) {
+
+    response.header( "Content-Type","application/json" );
+    // https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
+    response.header("Access-Control-Allow-Origin", "*");
+    local table =  {pin5 = pin5, pin7 = pin7, pin8=pin8, pin9=pin9,sid="imp_"+sid,unit="V",min="0.0",max="3.3",description="Electric Imp Analog Pins"};
+    response.send(200,http.jsonencode(table));
+    
+}
+ 
+// your agent code should only ever have ONE http.onrequest call.
+http.onrequest(requestHandler);
