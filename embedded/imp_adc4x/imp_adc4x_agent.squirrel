@@ -5,6 +5,9 @@ pin7 <- -1;
 pin8 <- -1;
 pin9 <- -1;
 sid <- -1;
+timestamp <- -1;
+millis <- -1
+
 
 // Log the device's ID
 //server.log("Device's unique id: " + hardware.getdeviceid());
@@ -24,11 +27,13 @@ function processResponse(response)
 }
 
 function postVoltages(pinArray) {
+    timestamp = pinArray[4];
+    millis = pinArray[5];
     pin5 = pinArray[0];
     pin7 = pinArray[1];
     pin8 = pinArray[2];
     pin9 = pinArray[3];
-    local myURL = LOGURL+"&pin9="+pin9+"&pin8="+pin8+"&pin7="+pin7+"&pin5="+pin5;
+    local myURL = LOGURL+"&pin9="+pin9+"&pin8="+pin8+"&pin7="+pin7+"&pin5="+pin5+"&timestamp="+timestamp+"&millis="+millis;
     server.log(myURL);
     local request = http.get(myURL);
     request.sendasync(processResponse);
@@ -39,11 +44,12 @@ device.on("id", setDeviceID);
 device.on("table",postVoltages);
 
 function requestHandler(request, response) {
+  // Check if the variable led was passed into the query
 
     response.header( "Content-Type","application/json" );
     // https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS
     response.header("Access-Control-Allow-Origin", "*");
-    local table =  {pin5 = pin5, pin7 = pin7, pin8=pin8, pin9=pin9,sid="imp_"+sid,unit="V",min="0.0",max="3.3",description="Electric Imp Analog Pins"};
+    local table =  {pin5 = pin5, pin7 = pin7, pin8=pin8, pin9=pin9,sid="imp_"+sid,unit="V",min="0.0",max="3.3",description="Electric Imp Analog Pins",timestamp=timestamp,millis=millis};
     response.send(200,http.jsonencode(table));
     
 }

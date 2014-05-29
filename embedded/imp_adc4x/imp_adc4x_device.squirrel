@@ -28,7 +28,7 @@ function getPin5Voltage()
 
 function sample()
 {
-    agent.send("table",[getPin5Voltage(),getPin7Voltage(),getPin8Voltage(),getPin9Voltage()]);
+    agent.send("table",[getPin5Voltage(),getPin7Voltage(),getPin8Voltage(),getPin9Voltage(),time(),hardware.millis()]);
     imp.wakeup(0.2, sample);
 }
 
